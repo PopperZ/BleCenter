@@ -20,10 +20,10 @@ import com.pressure.blecentral.utils.DataUtils;
 
 public class ServicesActivity extends BaseActivity {
     private ImageView mReturn;
-    private TextView mDevicesName,mReadData,mPressure,mTemperature,mBattery;
+    private TextView mDevicesName,mReadData,mPressure,mTemperature,mBattery,mTips;
     private EditText mSenddata;
     private Button mSend;
-    private String data="接受到的数据：";
+    private String data="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +39,7 @@ public class ServicesActivity extends BaseActivity {
     }
 
     private void initView() {
+        mTips=findViewById(R.id.tips);
         mReturn=findViewById(R.id.back);
         mReturn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,9 +72,9 @@ public class ServicesActivity extends BaseActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mPressure.setText("压力数据："+pressure);
-                mTemperature.setText("温度数据："+temperatur);
-                mBattery.setText("电量数据："+battery);
+                mPressure.setText("压力数据："+pressure+"公斤");
+                mTemperature.setText("温度数据："+temperatur+"摄氏度");
+                mBattery.setText("电量数据："+battery+"度");
                 mReadData.setText(data);
             }
         });
@@ -94,13 +95,19 @@ public class ServicesActivity extends BaseActivity {
             String action=intent.getAction();
             switch (action){
                 case ConstansUtils.BLE_NOTIFY:
+                    mTips.setVisibility(View.VISIBLE);
                     // TODO: 30/11/17 数据变化
                     Log.e(TAG,"ConstansUtils.BLE_NOTIFY");
-                    String pressure=intent.getStringExtra("pressure");
-                    String temperature=intent.getStringExtra("temperature");
-                    String battery=intent.getStringExtra("battery");
-                    data=data+"\n"+intent.getStringExtra("data");
-                    listenerDataChange(pressure,temperature,battery,data);
+                    final String pressure=intent.getStringExtra("pressure");
+                    final String temperature=intent.getStringExtra("temperature");
+                    final String battery=intent.getStringExtra("battery");
+                    data=intent.getStringExtra("data")+"\n"+data;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            listenerDataChange(pressure,temperature,battery,data);
+                        }
+                    });
                     break;
                 default:
                     break;

@@ -57,14 +57,21 @@
             android:layout_marginLeft="16dp"/>
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="接收到的数据："
+        android:id="@+id/tips"
+        android:visibility="gone"/>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="200dp">
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="100dp"
             android:text="接收数据显示区域：每行一笔数据，不超过20字节最前显示行序列，统一用8哥字符表示，后面可对齐"
             android:gravity="center"
+            android:maxLines="21"
             android:id="@+id/readData"/>
     </ScrollView>
 

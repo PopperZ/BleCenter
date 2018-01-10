@@ -19,7 +19,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -32,7 +31,6 @@ import android.widget.Toast;
 
 import com.pressure.blecentral.R;
 import com.pressure.blecentral.services.entity.Devices;
-import com.pressure.blecentral.services.entity.DevicesServics;
 import com.pressure.blecentral.ui.adapter.DevicesAdapter;
 import com.pressure.blecentral.utils.BleConnectUtils;
 import com.pressure.blecentral.utils.BleInitUtils;
@@ -43,6 +41,8 @@ import com.pressure.blecentral.utils.DataUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public  class MainActivity extends BaseActivity {
@@ -60,6 +60,8 @@ public  class MainActivity extends BaseActivity {
     public static  BluetoothGattCharacteristic mChar;
     private long mExitTime;
 
+    private TimerTask task;
+    private Timer timer;
 
 
 
@@ -76,6 +78,7 @@ public  class MainActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         BleConnectUtils.cutConnectBluetooth();
+        BleScanUtils.stopScnning(MainActivity.this);
     }
 
     //初始化蓝牙
@@ -83,6 +86,14 @@ public  class MainActivity extends BaseActivity {
 //        Log.e(TAG, ""+BleInitUtils.initBle(MainActivity.this));
         if (BleInitUtils.initBle(MainActivity.this)){
             BleScanUtils.startBleScan(MainActivity.this,mBleAdapter.getAddress());
+                timer=new Timer();
+                task=new TimerTask() {
+                    @Override
+                    public void run() {
+                        BleScanUtils.stopScnning(MainActivity.this);
+                    }
+                };
+                timer.schedule(task,6*1000);
         }
     }
 
