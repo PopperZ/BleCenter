@@ -11,13 +11,20 @@
     android:background="#eeeeee"
     >
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:text="Peripherals NearBy"
         android:textColor="@color/colorPrimaryDark"
         android:layout_gravity="center"
         android:gravity="center_vertical"
         android:layout_marginLeft="16dp"/>
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:text="重新扫描"
+        android:gravity="center"
+        android:layout_marginLeft="50dp"
+        android:id="@+id/reStartScan"/>
 </LinearLayout>
 
     <ListView

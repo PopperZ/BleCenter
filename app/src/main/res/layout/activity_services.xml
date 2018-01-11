@@ -79,7 +79,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
-        android:layout_marginLeft="16dp">
+        >
 
         <TextView
             android:layout_width="0dp"
@@ -95,26 +95,25 @@
             android:id="@+id/temperature"
             android:gravity="left|center_vertical"
             android:text="温度数据："
-            android:layout_marginLeft="16dp"
             android:layout_weight="1"/>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:id="@+id/battery"
-            android:gravity="left|center_vertical"
-            android:text="电量数据："
-            android:layout_marginLeft="16dp"
-            android:layout_weight="1"/>
-    </LinearLayout>
 
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:id="@+id/battery"
+        android:gravity="left|center_vertical"
+        android:text="电量数据："
+        />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"
-        android:hint="发送数据，最对20个HEX数据"
+        android:hint="发送数据，最多20个HEX数据"
         android:id="@+id/senddata"
         android:digits="1234567890ABCDEF"
-        android:maxLength="40"/>
+        android:maxLength="40"
+        />
 
 
     <Button

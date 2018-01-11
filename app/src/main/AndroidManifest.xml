@@ -29,7 +29,9 @@
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".ui.activity.ServicesActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            android:launchMode="singleInstance" />
     </application>
 
 </manifest>

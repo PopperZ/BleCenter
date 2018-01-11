@@ -20,21 +20,23 @@ public class DataUtils {
 
     //发送蓝牙数据
     public static void sendData(String data){
-        BluetoothGattService service= MainActivity.mBluetoothGatt.getService(UUID.fromString(ConstansUtils.SERVICES_UUID));
-        if (service!=null){
-            BluetoothGattCharacteristic characteristic=service.getCharacteristic(UUID.fromString(ConstansUtils.WRITE_UUID));
-            if (characteristic!=null){
-                if (characteristic.getProperties()== BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE){
-                    byte[]bytes=BleUtils.hexStringToByte(data);
-                    characteristic.setValue(bytes);
-                    MainActivity.mBluetoothGatt.writeCharacteristic(characteristic);
-                    Log.e(TAG,"write is done");
+        if (MainActivity.mBluetoothGatt!=null){
+            BluetoothGattService service= MainActivity.mBluetoothGatt.getService(UUID.fromString(ConstansUtils.SERVICES_UUID));
+            if (service!=null){
+                BluetoothGattCharacteristic characteristic=service.getCharacteristic(UUID.fromString(ConstansUtils.WRITE_UUID));
+                if (characteristic!=null){
+                    if (characteristic.getProperties()== BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE){
+                        byte[]bytes=BleUtils.hexStringToByte(data);
+                        characteristic.setValue(bytes);
+                        MainActivity.mBluetoothGatt.writeCharacteristic(characteristic);
+                        Log.e(TAG,"write is done");
+                    }
+                }else {
+                    Log.e(TAG,"characteristic is null");
                 }
             }else {
-                Log.e(TAG,"characteristic is null");
+                Log.e(TAG,"mServices is null");
             }
-        }else {
-            Log.e(TAG,"mServices is null");
         }
     }
 

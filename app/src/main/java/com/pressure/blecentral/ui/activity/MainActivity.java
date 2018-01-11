@@ -11,10 +11,7 @@ import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +23,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -41,8 +39,6 @@ import com.pressure.blecentral.utils.DataUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 public  class MainActivity extends BaseActivity {
@@ -51,6 +47,7 @@ public  class MainActivity extends BaseActivity {
     private static String TAG ="MainActivity";
     private static List<Devices>mList;
     private static DevicesAdapter mDevicesAdapter;
+    private Button mReStartScan;
 
     //蓝牙变量
     public static  BluetoothAdapter mBleAdapter;
@@ -59,11 +56,7 @@ public  class MainActivity extends BaseActivity {
     public static  String conDeviceName;
     public static  BluetoothGattCharacteristic mChar;
     private long mExitTime;
-
-    private TimerTask task;
-    private Timer timer;
-
-
+    private boolean isClick=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +64,19 @@ public  class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         mList=new ArrayList<Devices>();
         mDevices=findViewById(R.id.devices);
+        mReStartScan=findViewById(R.id.reStartScan);
+        mReStartScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mList.isEmpty()){
+                    Log.e(TAG,"mlstSize:"+mList.size());
+                }else {
+                    mList.clear();
+                    mDevicesAdapter.notifyDataSetChanged();
+                }
+                initBle();
+            }
+        });
         checkBluetoothPermission();
     }
 
@@ -81,19 +87,16 @@ public  class MainActivity extends BaseActivity {
         BleScanUtils.stopScnning(MainActivity.this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isClick=true;
+    }
+
     //初始化蓝牙
     private void initBle() {
-//        Log.e(TAG, ""+BleInitUtils.initBle(MainActivity.this));
         if (BleInitUtils.initBle(MainActivity.this)){
             BleScanUtils.startBleScan(MainActivity.this,mBleAdapter.getAddress());
-                timer=new Timer();
-                task=new TimerTask() {
-                    @Override
-                    public void run() {
-                        BleScanUtils.stopScnning(MainActivity.this);
-                    }
-                };
-                timer.schedule(task,6*1000);
         }
     }
 
@@ -104,12 +107,17 @@ public  class MainActivity extends BaseActivity {
         mDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                BleScanUtils.stopScnning(MainActivity.this);
-                Log.e(TAG,"position:"+position+"\n"+"data:"+parent.getAdapter().getItem(position).toString());
-                Devices devices= (Devices) parent.getAdapter().getItem(position);
-                Log.e(TAG,devices.getAddress());
-                connectBle(devices.getAddress());
-                conDeviceName=((Devices) parent.getAdapter().getItem(position)).getName();}
+                if (isClick){
+                    isClick=false;
+                    mDevices.setClickable(false);
+                    BleScanUtils.stopScnning(MainActivity.this);
+                    Log.e(TAG,"position:"+position+"\n"+"data:"+parent.getAdapter().getItem(position).toString());
+                    Devices devices= (Devices) parent.getAdapter().getItem(position);
+                    Log.e(TAG,devices.getAddress());
+                    connectBle(devices.getAddress());
+                    conDeviceName=((Devices) parent.getAdapter().getItem(position)).getName();
+                }
+            }
         });
     }
 
@@ -201,6 +209,11 @@ public  class MainActivity extends BaseActivity {
                 }else {
                     UUID=ServiceList.size()+"services";
                 }
+                for (int i=0;i<mList.size();i++){
+                    if (mList.get(i).getAddress().equals(result.getDevice().getAddress())){
+                        return;
+                    }
+                }
                 Devices devices=new Devices(result.getScanRecord().getDeviceName(),result.getDevice().getAddress()
                         ,UUID,result.getDevice().getAddress().toString());
                 mList.add(devices);
@@ -240,6 +253,8 @@ public  class MainActivity extends BaseActivity {
                 Log.e(TAG,"正在连接");
             }else  if (newState== BluetoothProfile.STATE_DISCONNECTED){
                 Log.e(TAG,"断开连接"+status+newState);
+//                ServicesActivity.instance.finish();
+                sendBroadcast(new Intent(ConstansUtils.BLE_DISCONNECT));
             }else  if (newState== BluetoothProfile.STATE_DISCONNECTING){
                 Log.e(TAG,"正在断开连接");
             }
@@ -335,7 +350,7 @@ public  class MainActivity extends BaseActivity {
 
     public void exit() {
         if ((System.currentTimeMillis() - mExitTime) > 2000) {
-            Toast.makeText(MainActivity.this, "再按一次退出每日新闻", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();
             mExitTime = System.currentTimeMillis();
         } else {
             finish();

@@ -64,7 +64,6 @@ public class DevicesAdapter extends BaseAdapter{
         holder.name.setText(list.get(position).getName());
         holder.address.setText(list.get(position).getAddress());
         holder.UUID.setText(list.get(position).getUUID());
-        holder.readUUID.setText(list.get(position).getReaduuid());
         return convertView;
     }
 
